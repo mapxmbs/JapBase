@@ -1,5 +1,5 @@
 {
-  "name": "japbase",
+  "name": "@japbase/hub",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,6 +9,8 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@japbase/ui": "workspace:*",
+    "@japbase/contracts": "workspace:*",
     "@supabase/supabase-js": "^2.91.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.27.1",

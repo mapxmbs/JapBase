@@ -1,6 +1,19 @@
+/**
+ * @app japbase-hub
+ * @file layout.tsx
+ * 
+ * Layout raiz do JapBase Hub (Shell/Orquestrador).
+ * 
+ * O Hub é responsável por:
+ * - Layout unificado (Sidebar, Header)
+ * - Navegação entre módulos
+ * - Autenticação centralizada
+ * - Orquestração de módulos como componentes de integração
+ */
+
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css"; // <--- ESSA LINHA É A CHAVE DE TUDO
+import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 

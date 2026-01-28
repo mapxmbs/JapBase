@@ -1,3 +1,15 @@
+/**
+ * @app japbase-hub
+ * @component Sidebar
+ * 
+ * Sidebar de navegação do JapBase Hub.
+ * 
+ * Responsável por:
+ * - Navegação entre módulos
+ * - Branding Japurá Pneus
+ * - Estado de expansão/colapso
+ */
+
 'use client';
 
 import { useState } from 'react';

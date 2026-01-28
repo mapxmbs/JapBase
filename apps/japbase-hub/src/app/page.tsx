@@ -1,3 +1,18 @@
+/**
+ * @app japbase-hub
+ * @file page.tsx
+ * 
+ * Página principal do JapBase Hub.
+ * 
+ * Funciona como Shell/Orquestrador que:
+ * - Renderiza módulos como componentes de integração
+ * - Gerencia navegação e estado global
+ * - Fornece layout unificado (Sidebar + conteúdo)
+ * 
+ * Os módulos são importados como componentes, mas futuramente
+ * podem ser consumidos via APIs REST quando extraídos para polirepo.
+ */
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -10,15 +25,14 @@ import JapCatalog from '@/components/modules/JapCatalog';
 import JapMarket from '@/components/modules/JapMarket';
 import JapDistribution from '@/components/modules/JapDistribution';
 import JapSales from '@/components/modules/JapSales';
-import DetachButton from '@/components/ui/DetachButton';
-import AIAssistant from '@/components/ui/AIAssistant';
+import { DetachButton, AIAssistant } from '@japbase/ui';
 
 export default function Home() {
   const [currentView, setCurrentView] = useState('home');
   const [isDetached, setIsDetached] = useState(false);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
 
-  // Suporta parâmetro de view via URL (para desacoplar)
+  // Suporta parâmetro de view via URL (para desacoplar módulos)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const viewParam = params.get('view');
@@ -33,6 +47,12 @@ export default function Home() {
     }
   }, []);
 
+  /**
+   * Renderiza o conteúdo do módulo selecionado.
+   * 
+   * Futuramente, quando módulos forem extraídos para polirepo,
+   * esta função pode consumir APIs REST em vez de importar componentes diretamente.
+   */
   const renderContent = () => {
     switch (currentView) {
       case 'home':

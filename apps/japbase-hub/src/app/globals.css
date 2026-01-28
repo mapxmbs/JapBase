@@ -1,3 +1,11 @@
+/**
+ * @app japbase-hub
+ * @file globals.css
+ * 
+ * Estilos globais do JapBase Hub.
+ * Define o Design System Japurá 2025 (cores, tipografia, espaçamentos).
+ */
+
 @import "tailwindcss";
 
 @theme {

@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# JapBase - Ecossistema Corporativo Estratégico
 
-## Getting Started
+> Plataforma estratégica corporativa da Japurá Pneus desenvolvida como **Monorepo Polissistêmico Evolutivo**.
 
-First, run the development server:
+## 📋 Visão Geral
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+O JapBase é um **ecossistema corporativo estratégico** construído com arquitetura polissistêmica, onde cada módulo representa um **Bounded Context** independente com ownership claro de dados.
+
+### Arquitetura
+
+- **Hoje**: Monorepo estrutural (`apps/*`, `packages/*`)
+- **Amanhã**: Polirepo por sistema (extração sem retrabalho estrutural)
+
+## 🏗️ Estrutura do Repositório
+
+```
+japbase/
+├── apps/                    # Aplicações (um app = um sistema/Bounded Context)
+│   ├── japbase-hub/         # Shell/Orquestrador (JapBase Hub)
+│   └── japimport/           # Sistema JapImport
+│
+├── packages/                # Pacotes compartilhados (sem lógica de negócio)
+│   ├── ui/                  # Design System (componentes React/Tailwind)
+│   └── contracts/           # Contratos de Integração (TypeScript types)
+│
+├── infra/                   # Infraestrutura e automação
+│   ├── sql/                 # Scripts SQL compartilhados
+│   ├── n8n/                 # Workflows n8n (ETLs, automações)
+│   └── etl/                 # Scripts de ETL e data pipeline
+│
+└── docs/                    # Documentação
+    ├── arquitetura/         # Decisões arquiteturais (ADRs)
+    ├── contratos/           # Documentação de APIs e contratos
+    └── guias/               # Guias de desenvolvimento
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Início Rápido
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Instalação
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm install
+```
 
-## Learn More
+### Desenvolvimento
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+# Rodar JapBase Hub (Shell/Orquestrador)
+npm run dev:hub
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Rodar JapImport (sistema específico)
+npm run dev:import
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Build
 
-## Deploy on Vercel
+```bash
+# Build de todos os apps
+npm run build
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Build específico
+npm run build:hub
+npm run build:import
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📚 Documentação
+
+Consulte `DOCUMENTACAO.md` para:
+- Arquitetura detalhada
+- Decisões arquiteturais (ADRs)
+- Contratos de integração
+- Guias de desenvolvimento
+
+## 🏛️ Princípios Arquiteturais
+
+1. **Bounded Contexts Independentes**: Cada módulo é um domínio de negócio delimitado
+2. **Ownership de Dados**: Apenas o sistema dono escreve em suas tabelas
+3. **Anti-Acoplamento Estrutural**: Comunicação via contratos explícitos
+4. **Arquitetura Evolutiva**: Preparado para extração para polirepo
+
+## 📦 Packages
+
+### `@japbase/ui`
+Design System Japurá 2025 - Componentes React reutilizáveis
+
+### `@japbase/contracts`
+Contratos de integração entre sistemas (tipos TypeScript)
+
+## 🔗 Links
+
+- [Documentação Completa](./DOCUMENTACAO.md)
+- [Arquitetura](./docs/arquitetura/)
+- [Contratos](./docs/contratos/)
