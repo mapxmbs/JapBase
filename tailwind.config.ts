@@ -21,7 +21,8 @@ const config: Config = {
         sans: ['Inter', 'sans-serif'],
       },
       borderRadius: {
-        'japura': '12px',
+        'japura': '4px',
+        'japura-sm': '2px',
       },
     },
   },

@@ -74,54 +74,54 @@ export default function JapAudit() {
   const getStatusConfig = (status: string) => {
     switch (status) {
       case 'pendente':
-        return { icon: AlertTriangle, color: 'bg-yellow-100 text-yellow-700', label: 'Pendente' };
+        return { icon: AlertTriangle, color: 'bg-japura-bg text-japura-dark border border-gray-400', label: 'Pendente' };
       case 'resolvida':
-        return { icon: CheckCircle2, color: 'bg-green-100 text-green-700', label: 'Resolvida' };
+        return { icon: CheckCircle2, color: 'bg-gray-100 text-japura-dark border border-gray-400', label: 'Resolvida' };
       case 'aprovada':
-        return { icon: CheckCircle2, color: 'bg-blue-100 text-blue-700', label: 'Aprovada' };
+        return { icon: CheckCircle2, color: 'bg-gray-100 text-japura-black border border-gray-400', label: 'Aprovada' };
       default:
-        return { icon: XCircle, color: 'bg-red-100 text-red-700', label: 'Erro' };
+        return { icon: XCircle, color: 'bg-japura-bg text-japura-grey border border-gray-400', label: 'Erro' };
     }
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       {/* Header */}
-      <div className="flex justify-between items-end pb-6 border-b border-red-500">
+      <div className="flex justify-between items-end pb-3 border-b border-gray-400">
         <div>
-          <h1 className="text-4xl font-black text-black mb-2">Auditoria de Faturamento</h1>
-          <p className="text-japura-grey">Confronto de notas fiscais com condições comerciais</p>
+          <h1 className="text-lg font-semibold text-japura-black mb-1">Auditoria de Faturamento</h1>
+          <p className="text-xs text-japura-grey">Confronto de notas fiscais com condições comerciais</p>
         </div>
         <div className="flex gap-2">
-          <button className="px-4 py-2 border border-gray-300 rounded-japura hover:bg-gray-50 flex items-center gap-2">
-            <Calendar size={18} />
+          <button className="px-3 py-1.5 border border-gray-400 rounded hover:bg-japura-bg flex items-center gap-2 text-sm">
+            <Calendar size={14} />
             <span>Processar Mês</span>
           </button>
-          <button className="px-4 py-2 bg-red-600 text-white rounded-japura hover:bg-red-700 flex items-center gap-2">
-            <Download size={18} />
+          <button className="px-3 py-1.5 bg-japura-dark text-white rounded hover:bg-japura-black flex items-center gap-2 text-sm">
+            <Download size={14} />
             <span>Exportar Relatório</span>
           </button>
         </div>
       </div>
 
       {/* Filtros */}
-      <div className="bg-japura-white rounded-japura shadow-sm border border-gray-200 p-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="bg-japura-white rounded border border-gray-400 p-3">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
           <div>
-            <label className="block text-xs font-semibold text-japura-grey mb-2">Mês/Ano</label>
+            <label className="block text-xs font-medium text-japura-grey mb-1">Mês/Ano</label>
             <input
               type="month"
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-japura focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="w-full px-2 py-1.5 border border-gray-400 rounded text-sm focus:outline-none focus:ring-1 focus:ring-japura-dark"
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-japura-grey mb-2">Status</label>
+            <label className="block text-xs font-medium text-japura-grey mb-1">Status</label>
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-japura focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="w-full px-2 py-1.5 border border-gray-400 rounded text-sm focus:outline-none focus:ring-1 focus:ring-japura-dark"
             >
               <option value="todos">Todos</option>
               <option value="pendente">Pendentes</option>
@@ -130,8 +130,8 @@ export default function JapAudit() {
             </select>
           </div>
           <div className="flex items-end">
-            <button className="w-full px-4 py-2 bg-red-600 text-white rounded-japura hover:bg-red-700 flex items-center justify-center gap-2">
-              <Filter size={18} />
+            <button className="w-full px-3 py-1.5 bg-japura-dark text-white rounded hover:bg-japura-black flex items-center justify-center gap-2 text-sm">
+              <Filter size={14} />
               <span>Aplicar</span>
             </button>
           </div>
@@ -139,70 +139,70 @@ export default function JapAudit() {
       </div>
 
       {/* KPIs */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-japura-white p-6 rounded-japura shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-red-50 rounded-lg text-red-600">
-              <AlertTriangle size={24} />
-            </div>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+        <div className="bg-japura-white p-2 rounded border border-gray-400 flex items-center gap-2">
+          <div className="p-1.5 bg-japura-bg rounded border border-gray-200 shrink-0">
+            <AlertTriangle size={14} className="text-japura-dark" />
           </div>
-          <p className="text-xs font-bold text-japura-grey uppercase tracking-wider mb-1">Divergências Pendentes</p>
-          <p className="text-3xl font-black text-black">{totalDivergencias}</p>
-          <p className="text-xs text-red-600 mt-2">Requerem ação</p>
+          <div>
+            <p className="text-[11px] font-medium text-japura-grey uppercase">Divergências Pendentes</p>
+            <p className="text-base font-semibold text-japura-black tabular-nums">{totalDivergencias}</p>
+            <p className="text-[11px] text-japura-grey">Requerem ação</p>
+          </div>
         </div>
-        <div className="bg-japura-white p-6 rounded-japura shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-yellow-50 rounded-lg text-yellow-600">
-              <DollarSign size={24} />
-            </div>
+        <div className="bg-japura-white p-2 rounded border border-gray-400 flex items-center gap-2">
+          <div className="p-1.5 bg-japura-bg rounded border border-gray-200 shrink-0">
+            <DollarSign size={14} className="text-japura-dark" />
           </div>
-          <p className="text-xs font-bold text-japura-grey uppercase tracking-wider mb-1">Valor Divergente</p>
-          <p className="text-3xl font-black text-black">
-            R$ {totalValorDivergente.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-          </p>
-          <p className="text-xs text-yellow-600 mt-2">Em análise</p>
+          <div>
+            <p className="text-[11px] font-medium text-japura-grey uppercase">Valor Divergente</p>
+            <p className="text-base font-semibold text-japura-black tabular-nums">
+              R$ {totalValorDivergente.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+            </p>
+            <p className="text-[11px] text-japura-grey">Em análise</p>
+          </div>
         </div>
-        <div className="bg-japura-white p-6 rounded-japura shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-green-50 rounded-lg text-green-600">
-              <CheckCircle2 size={24} />
-            </div>
+        <div className="bg-japura-white p-2 rounded border border-gray-400 flex items-center gap-2">
+          <div className="p-1.5 bg-gray-100 rounded border border-gray-200 shrink-0">
+            <CheckCircle2 size={14} className="text-japura-dark" />
           </div>
-          <p className="text-xs font-bold text-japura-grey uppercase tracking-wider mb-1">Resolvidas</p>
-          <p className="text-3xl font-black text-black">
-            {divergencias.filter(d => d.status === 'resolvida').length}
-          </p>
-          <p className="text-xs text-green-600 mt-2">Este mês</p>
+          <div>
+            <p className="text-[11px] font-medium text-japura-grey uppercase">Resolvidas</p>
+            <p className="text-base font-semibold text-japura-black tabular-nums">
+              {divergencias.filter(d => d.status === 'resolvida').length}
+            </p>
+            <p className="text-[11px] text-japura-grey">Este mês</p>
+          </div>
         </div>
-        <div className="bg-japura-white p-6 rounded-japura shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-blue-50 rounded-lg text-blue-600">
-              <FileCheck size={24} />
-            </div>
+        <div className="bg-japura-white p-2 rounded border border-gray-400 flex items-center gap-2">
+          <div className="p-1.5 bg-gray-100 rounded border border-gray-200 shrink-0">
+            <FileCheck size={14} className="text-japura-dark" />
           </div>
-          <p className="text-xs font-bold text-japura-grey uppercase tracking-wider mb-1">Total Auditado</p>
-          <p className="text-3xl font-black text-black">{divergencias.length}</p>
-          <p className="text-xs text-japura-grey mt-2">Notas fiscais</p>
+          <div>
+            <p className="text-[11px] font-medium text-japura-grey uppercase">Total Auditado</p>
+            <p className="text-base font-semibold text-japura-black tabular-nums">{divergencias.length}</p>
+            <p className="text-[11px] text-japura-grey">Notas fiscais</p>
+          </div>
         </div>
       </div>
 
       {/* Tabela de Divergências */}
-      <div className="bg-japura-white rounded-japura shadow-sm border border-gray-200 overflow-hidden">
-        <div className="p-6 border-b border-gray-200">
-          <h3 className="text-xl font-black text-black">Divergências Identificadas</h3>
+      <div className="bg-japura-white rounded border border-gray-400 overflow-hidden">
+        <div className="p-2 border-b border-gray-400">
+          <h3 className="text-base font-semibold text-japura-black">Divergências Identificadas</h3>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-gray-200 border-b border-gray-400">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-bold text-japura-grey uppercase">Nota Fiscal</th>
-                <th className="px-4 py-3 text-left text-xs font-bold text-japura-grey uppercase">Cliente</th>
-                <th className="px-4 py-3 text-right text-xs font-bold text-japura-grey uppercase">Valor Nota</th>
-                <th className="px-4 py-3 text-right text-xs font-bold text-japura-grey uppercase">Valor Esperado</th>
-                <th className="px-4 py-3 text-right text-xs font-bold text-japura-grey uppercase">Diferença</th>
-                <th className="px-4 py-3 text-left text-xs font-bold text-japura-grey uppercase">Condição</th>
-                <th className="px-4 py-3 text-left text-xs font-bold text-japura-grey uppercase">Status</th>
-                <th className="px-4 py-3 text-center text-xs font-bold text-japura-grey uppercase">Ações</th>
+                <th className="px-2 py-1 text-left text-xs font-semibold text-japura-grey uppercase">Nota Fiscal</th>
+                <th className="px-2 py-1 text-left text-xs font-semibold text-japura-grey uppercase">Cliente</th>
+                <th className="px-2 py-1 text-right text-xs font-semibold text-japura-grey uppercase">Valor Nota</th>
+                <th className="px-2 py-1 text-right text-xs font-semibold text-japura-grey uppercase">Valor Esperado</th>
+                <th className="px-2 py-1 text-right text-xs font-semibold text-japura-grey uppercase">Diferença</th>
+                <th className="px-2 py-1 text-left text-xs font-semibold text-japura-grey uppercase">Condição</th>
+                <th className="px-2 py-1 text-left text-xs font-semibold text-japura-grey uppercase">Status</th>
+                <th className="px-2 py-1 text-center text-xs font-semibold text-japura-grey uppercase">Ações</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -211,34 +211,34 @@ export default function JapAudit() {
                 const StatusIcon = statusConfig.icon;
                 
                 return (
-                  <tr key={div.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3 text-sm font-semibold text-black">{div.notaFiscal}</td>
-                    <td className="px-4 py-3 text-sm text-japura-dark">{div.cliente}</td>
-                    <td className="px-4 py-3 text-sm text-right text-japura-dark">
+                  <tr key={div.id} className="hover:bg-japura-bg transition-colors">
+                    <td className="px-2 py-1 text-xs font-semibold text-japura-black">{div.notaFiscal}</td>
+                    <td className="px-2 py-1 text-xs text-japura-dark">{div.cliente}</td>
+                    <td className="px-2 py-1 text-xs text-right text-japura-dark">
                       R$ {div.valorNota.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </td>
-                    <td className="px-4 py-3 text-sm text-right text-japura-dark">
+                    <td className="px-2 py-1 text-xs text-right text-japura-dark">
                       R$ {div.valorEsperado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </td>
-                    <td className="px-4 py-3 text-sm text-right">
-                      <span className={`font-semibold ${div.diferenca > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                    <td className="px-2 py-1 text-xs text-right">
+                      <span className={`font-semibold ${div.diferenca > 0 ? 'text-japura-dark' : 'text-japura-grey'}`}>
                         {div.diferenca > 0 ? '+' : ''}R$ {div.diferenca.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-sm text-japura-dark">{div.condicaoComercial}</td>
-                    <td className="px-4 py-3">
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 w-fit ${statusConfig.color}`}>
+                    <td className="px-2 py-1 text-xs text-japura-dark">{div.condicaoComercial}</td>
+                    <td className="px-2 py-1">
+                      <span className={`px-2 py-0.5 rounded text-xs font-medium flex items-center gap-1 w-fit border ${statusConfig.color}`}>
                         <StatusIcon size={12} />
                         {statusConfig.label}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-center">
-                      <div className="flex justify-center gap-2">
-                        <button className="text-blue-600 hover:text-blue-800">
-                          <FileCheck size={18} />
+                    <td className="px-2 py-1 text-center">
+                      <div className="flex justify-center gap-1">
+                        <button className="text-japura-dark hover:text-japura-black p-1">
+                          <FileCheck size={14} />
                         </button>
-                        <button className="text-green-600 hover:text-green-800">
-                          <CheckCircle2 size={18} />
+                        <button className="text-japura-dark hover:text-japura-black p-1">
+                          <CheckCircle2 size={14} />
                         </button>
                       </div>
                     </td>
@@ -251,24 +251,24 @@ export default function JapAudit() {
       </div>
 
       {/* Resumo de Economia */}
-      <div className="bg-japura-white rounded-japura shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-black text-black mb-4">Resumo de Economia Identificada</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="p-4 bg-green-50 rounded-lg border-l-4 border-green-500">
-            <p className="text-xs font-semibold text-japura-grey uppercase mb-1">Economia Potencial</p>
-            <p className="text-2xl font-black text-green-700">
+      <div className="bg-japura-white rounded border border-gray-400 p-3">
+        <h3 className="text-base font-semibold text-japura-black mb-2">Resumo de Economia Identificada</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+          <div className="p-2 bg-japura-bg rounded border-l-2 border-japura-dark">
+            <p className="text-[11px] font-medium text-japura-grey uppercase mb-0.5">Economia Potencial</p>
+            <p className="text-base font-semibold text-japura-black">
               R$ {totalValorDivergente.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
             </p>
           </div>
-          <div className="p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
-            <p className="text-xs font-semibold text-japura-grey uppercase mb-1">Notas Corretas</p>
-            <p className="text-2xl font-black text-blue-700">
+          <div className="p-2 bg-gray-50 rounded border-l-2 border-gray-400">
+            <p className="text-[11px] font-medium text-japura-grey uppercase mb-0.5">Notas Corretas</p>
+            <p className="text-base font-semibold text-japura-black">
               {divergencias.filter(d => d.diferenca === 0).length}
             </p>
           </div>
-          <div className="p-4 bg-yellow-50 rounded-lg border-l-4 border-yellow-500">
-            <p className="text-xs font-semibold text-japura-grey uppercase mb-1">Taxa de Conformidade</p>
-            <p className="text-2xl font-black text-yellow-700">
+          <div className="p-2 bg-gray-50 rounded border-l-2 border-gray-400">
+            <p className="text-[11px] font-medium text-japura-grey uppercase mb-0.5">Taxa de Conformidade</p>
+            <p className="text-base font-semibold text-japura-black">
               {((divergencias.filter(d => d.diferenca === 0).length / divergencias.length) * 100).toFixed(1)}%
             </p>
           </div>

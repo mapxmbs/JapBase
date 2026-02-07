@@ -274,8 +274,8 @@ export async function getPimps(filters?: {
         .schema(SCHEMA)
         .from(TABLE_TRANSITO_GERAL)
         .select('*')
+        .in('pimp', pimpNums)
     )
-      .in('pimp', pimpNums)
 
     if (transitoGeralError) {
       console.error('Erro Supabase getPimps (pimp_transito_geral):', transitoGeralError)

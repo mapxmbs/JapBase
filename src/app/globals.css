@@ -8,7 +8,7 @@
   --color-japura-white: #ffffff;
   
   --font-sans: 'Inter', sans-serif;
-  --radius-japura: 12px;
+  --radius-japura: 4px;
 }
 
 @layer base {
@@ -16,11 +16,13 @@
     background-color: #f0efee;
     color: #3E3F40;
     font-family: 'Inter', sans-serif;
+    font-size: 13px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
   
   h1, h2 {
     color: #000000;
+    font-weight: 600;
   }
 }

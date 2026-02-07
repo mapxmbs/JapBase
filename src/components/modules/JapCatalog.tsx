@@ -63,13 +63,13 @@ export default function JapCatalog() {
   const getStatusConfig = (status: FichaStatus) => {
     switch (status) {
       case 'pendente':
-        return { icon: Clock, color: 'bg-yellow-100 text-yellow-700', label: 'Pendente' };
+        return { icon: Clock, color: 'bg-japura-bg text-japura-dark border border-gray-400', label: 'Pendente' };
       case 'processamento':
-        return { icon: Clock, color: 'bg-blue-100 text-blue-700', label: 'Em Processamento' };
+        return { icon: Clock, color: 'bg-gray-100 text-japura-dark border border-gray-400', label: 'Em Processamento' };
       case 'concluido':
-        return { icon: CheckCircle2, color: 'bg-green-100 text-green-700', label: 'Concluído' };
+        return { icon: CheckCircle2, color: 'bg-gray-100 text-japura-black border border-gray-400', label: 'Concluído' };
       case 'cancelado':
-        return { icon: XCircle, color: 'bg-red-100 text-red-700', label: 'Cancelado' };
+        return { icon: XCircle, color: 'bg-japura-bg text-japura-grey border border-gray-400', label: 'Cancelado' };
     }
   };
 
@@ -84,21 +84,21 @@ export default function JapCatalog() {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       {/* Header */}
-      <div className="flex justify-between items-end pb-6 border-b border-green-500">
+      <div className="flex justify-between items-end pb-3 border-b border-gray-400">
         <div>
-          <h1 className="text-4xl font-black text-black mb-2">Catálogo e Fichas Técnicas</h1>
-          <p className="text-japura-grey">Gestão de fichas técnicas de produtos por marca</p>
+          <h1 className="text-lg font-semibold text-japura-black mb-1">Catálogo e Fichas Técnicas</h1>
+          <p className="text-xs text-japura-grey">Gestão de fichas técnicas de produtos por marca</p>
         </div>
-        <button className="px-6 py-3 bg-green-600 text-white rounded-japura hover:bg-green-700 flex items-center gap-2">
-          <Plus size={20} />
+        <button className="px-3 py-1.5 bg-japura-dark text-white rounded hover:bg-japura-black flex items-center gap-2 text-sm">
+          <Plus size={14} />
           <span>Solicitar Nova Ficha</span>
         </button>
       </div>
 
       {/* Abas */}
-      <div className="flex gap-2 border-b border-gray-200">
+      <div className="flex gap-2 border-b border-gray-400">
         {[
           { id: 'todas', label: 'Todas as Fichas', count: fichas.length },
           { id: 'pendentes', label: 'Pendentes', count: fichas.filter(f => f.status === 'pendente').length },
@@ -107,17 +107,15 @@ export default function JapCatalog() {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as any)}
-            className={`
-              px-6 py-3 font-semibold text-sm transition-colors relative
-              ${activeTab === tab.id
-                ? 'text-green-600 border-b-2 border-green-600'
-                : 'text-japura-grey hover:text-black'
-              }
-            `}
+            className={`px-3 py-2 font-medium text-sm transition-colors border-b-2 -mb-px ${
+              activeTab === tab.id
+                ? 'text-japura-black border-japura-dark'
+                : 'text-japura-grey hover:text-japura-dark border-transparent'
+            }`}
           >
             {tab.label}
             {tab.count > 0 && (
-              <span className="ml-2 px-2 py-0.5 bg-gray-100 rounded-full text-xs">
+              <span className="ml-1.5 px-1.5 py-0.5 bg-gray-100 rounded text-xs border border-gray-300">
                 {tab.count}
               </span>
             )}
@@ -126,122 +124,113 @@ export default function JapCatalog() {
       </div>
 
       {/* Barra de Busca e Filtros */}
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center gap-2">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-japura-grey" size={18} />
+          <Search className="absolute left-2 top-1/2 -translate-y-1/2 text-japura-grey" size={14} />
           <input
             type="text"
             placeholder="Buscar por produto, marca, SKU..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-japura focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full pl-8 pr-3 py-1.5 border border-gray-400 rounded text-sm focus:outline-none focus:ring-1 focus:ring-japura-dark"
           />
         </div>
         <div className="flex gap-2">
-          <button className="px-4 py-2 border border-gray-300 rounded-japura hover:bg-gray-50 flex items-center gap-2">
-            <Filter size={18} />
+          <button className="px-3 py-1.5 border border-gray-400 rounded hover:bg-japura-bg flex items-center gap-2 text-sm">
+            <Filter size={14} />
             <span>Filtros</span>
           </button>
-          <button className="px-4 py-2 border border-gray-300 rounded-japura hover:bg-gray-50 flex items-center gap-2">
-            <Download size={18} />
+          <button className="px-3 py-1.5 border border-gray-400 rounded hover:bg-japura-bg flex items-center gap-2 text-sm">
+            <Download size={14} />
             <span>Exportar</span>
           </button>
         </div>
       </div>
 
-      {/* Lista de Fichas */}
-      <div className="space-y-4">
-        {filteredFichas.map((ficha) => {
-          const statusConfig = getStatusConfig(ficha.status);
-          const StatusIcon = statusConfig.icon;
-          
-          return (
-            <div
-              key={ficha.id}
-              className="bg-japura-white rounded-japura shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
-            >
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-lg font-black text-black">{ficha.produto}</h3>
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 ${statusConfig.color}`}>
-                      <StatusIcon size={14} />
-                      {statusConfig.label}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-3 gap-4 mt-4">
-                    <div>
-                      <p className="text-xs font-semibold text-japura-grey uppercase mb-1">Marca</p>
-                      <p className="text-sm font-semibold text-black">{ficha.marca}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-japura-grey uppercase mb-1">SKU</p>
-                      <p className="text-sm font-semibold text-black">{ficha.sku}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-japura-grey uppercase mb-1">Data Solicitação</p>
-                      <p className="text-sm text-japura-dark">
-                        {new Date(ficha.dataSolicitacao).toLocaleDateString('pt-BR')}
-                      </p>
-                    </div>
-                  </div>
-                  {ficha.responsavel && (
-                    <div className="mt-3">
-                      <p className="text-xs text-japura-grey">Responsável: <span className="font-semibold">{ficha.responsavel}</span></p>
-                    </div>
-                  )}
-                  {ficha.observacoes && (
-                    <div className="mt-3 p-3 bg-yellow-50 rounded-lg border-l-4 border-yellow-500">
-                      <p className="text-sm text-japura-dark">{ficha.observacoes}</p>
-                    </div>
-                  )}
-                </div>
-                <div className="ml-6 flex gap-2">
-                  <button className="p-2 text-green-600 hover:bg-green-50 rounded-lg">
-                    <FileText size={20} />
-                  </button>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+      {/* Lista de Fichas - Tabela densa */}
+      <div className="bg-japura-white rounded border border-gray-400 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-200 border-b border-gray-400">
+              <tr>
+                <th className="px-2 py-1 text-left text-xs font-semibold text-japura-grey uppercase">Produto</th>
+                <th className="px-2 py-1 text-left text-xs font-semibold text-japura-grey uppercase">Marca</th>
+                <th className="px-2 py-1 text-left text-xs font-semibold text-japura-grey uppercase">SKU</th>
+                <th className="px-2 py-1 text-left text-xs font-semibold text-japura-grey uppercase">Status</th>
+                <th className="px-2 py-1 text-left text-xs font-semibold text-japura-grey uppercase">Data Solicitação</th>
+                <th className="px-2 py-1 text-left text-xs font-semibold text-japura-grey uppercase">Responsável</th>
+                <th className="px-2 py-1 text-left text-xs font-semibold text-japura-grey uppercase">Observações</th>
+                <th className="px-2 py-1 text-center text-xs font-semibold text-japura-grey uppercase">Ações</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {filteredFichas.map((ficha) => {
+                const statusConfig = getStatusConfig(ficha.status);
+                const StatusIcon = statusConfig.icon;
+                return (
+                  <tr key={ficha.id} className="hover:bg-japura-bg transition-colors">
+                    <td className="px-2 py-1 text-xs font-semibold text-japura-black">{ficha.produto}</td>
+                    <td className="px-2 py-1 text-xs text-japura-dark">{ficha.marca}</td>
+                    <td className="px-2 py-1 text-xs text-japura-dark">{ficha.sku}</td>
+                    <td className="px-2 py-1">
+                      <span className={`px-2 py-0.5 rounded text-xs font-medium flex items-center gap-1 w-fit border ${statusConfig.color}`}>
+                        <StatusIcon size={12} />
+                        {statusConfig.label}
+                      </span>
+                    </td>
+                    <td className="px-2 py-1 text-xs text-japura-dark">
+                      {new Date(ficha.dataSolicitacao).toLocaleDateString('pt-BR')}
+                    </td>
+                    <td className="px-2 py-1 text-xs text-japura-grey">{ficha.responsavel || '-'}</td>
+                    <td className="px-2 py-1 text-xs text-japura-grey max-w-[200px] truncate">{ficha.observacoes || '-'}</td>
+                    <td className="px-2 py-1 text-center">
+                      <button className="p-1 text-japura-dark hover:text-japura-black">
+                        <FileText size={14} />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      {/* Estatísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-japura-white p-6 rounded-japura shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-xs font-bold text-japura-grey uppercase">Total de Fichas</p>
-            <BookOpen size={20} className="text-green-600" />
+      {/* Estatísticas - linha compacta */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+        <div className="bg-japura-white p-2 rounded border border-gray-400 flex items-center gap-2">
+          <BookOpen size={14} className="text-japura-dark shrink-0" />
+          <div>
+            <p className="text-[11px] font-medium text-japura-grey uppercase">Total de Fichas</p>
+            <p className="text-base font-semibold text-japura-black tabular-nums">{fichas.length}</p>
           </div>
-          <p className="text-3xl font-black text-black">{fichas.length}</p>
         </div>
-        <div className="bg-japura-white p-6 rounded-japura shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-xs font-bold text-japura-grey uppercase">Pendentes</p>
-            <Clock size={20} className="text-yellow-600" />
+        <div className="bg-japura-white p-2 rounded border border-gray-400 flex items-center gap-2">
+          <Clock size={14} className="text-japura-dark shrink-0" />
+          <div>
+            <p className="text-[11px] font-medium text-japura-grey uppercase">Pendentes</p>
+            <p className="text-base font-semibold text-japura-black tabular-nums">
+              {fichas.filter(f => f.status === 'pendente').length}
+            </p>
           </div>
-          <p className="text-3xl font-black text-black">
-            {fichas.filter(f => f.status === 'pendente').length}
-          </p>
         </div>
-        <div className="bg-japura-white p-6 rounded-japura shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-xs font-bold text-japura-grey uppercase">Em Processamento</p>
-            <Clock size={20} className="text-blue-600" />
+        <div className="bg-japura-white p-2 rounded border border-gray-400 flex items-center gap-2">
+          <Clock size={14} className="text-japura-dark shrink-0" />
+          <div>
+            <p className="text-[11px] font-medium text-japura-grey uppercase">Em Processamento</p>
+            <p className="text-base font-semibold text-japura-black tabular-nums">
+              {fichas.filter(f => f.status === 'processamento').length}
+            </p>
           </div>
-          <p className="text-3xl font-black text-black">
-            {fichas.filter(f => f.status === 'processamento').length}
-          </p>
         </div>
-        <div className="bg-japura-white p-6 rounded-japura shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-xs font-bold text-japura-grey uppercase">Concluídas</p>
-            <CheckCircle2 size={20} className="text-green-600" />
+        <div className="bg-japura-white p-2 rounded border border-gray-400 flex items-center gap-2">
+          <CheckCircle2 size={14} className="text-japura-dark shrink-0" />
+          <div>
+            <p className="text-[11px] font-medium text-japura-grey uppercase">Concluídas</p>
+            <p className="text-base font-semibold text-japura-black tabular-nums">
+              {fichas.filter(f => f.status === 'concluido').length}
+            </p>
           </div>
-          <p className="text-3xl font-black text-black">
-            {fichas.filter(f => f.status === 'concluido').length}
-          </p>
         </div>
       </div>
     </div>

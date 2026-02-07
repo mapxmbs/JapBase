@@ -165,13 +165,13 @@ export default function JapDistribution() {
   const getPrioridadeColor = (prioridade: string) => {
     switch (prioridade) {
       case 'alta':
-        return 'bg-red-100 text-red-700 border-red-300';
+        return 'bg-japura-bg text-japura-dark border-gray-400';
       case 'media':
-        return 'bg-yellow-100 text-yellow-700 border-yellow-300';
+        return 'bg-gray-100 text-japura-dark border-gray-400';
       case 'baixa':
-        return 'bg-green-100 text-green-700 border-green-300';
+        return 'bg-gray-100 text-japura-black border-gray-400';
       default:
-        return 'bg-gray-100 text-gray-700';
+        return 'bg-gray-100 text-japura-grey border-gray-300';
     }
   };
 
@@ -182,38 +182,38 @@ export default function JapDistribution() {
   const maxEstoque = Math.max(...estoquePorFilial.map(e => e.estoqueTotal), 1);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       {/* Header */}
-      <div className="flex justify-between items-end pb-6 border-b-2 border-orange-500">
+      <div className="flex justify-between items-end pb-3 border-b border-gray-400">
         <div>
-          <h1 className="text-4xl font-black text-japura-black mb-2">Distribuição Inteligente</h1>
-          <p className="text-japura-grey">Sistema preditivo de distribuição de produtos por filial</p>
+          <h1 className="text-lg font-semibold text-japura-black mb-1">Distribuição Inteligente</h1>
+          <p className="text-xs text-japura-grey">Sistema preditivo de distribuição de produtos por filial</p>
         </div>
         <div className="flex gap-2">
-          <button className="px-4 py-2 border border-gray-300 rounded-japura hover:bg-gray-50 flex items-center gap-2 transition-colors">
-            <RefreshCw size={18} />
+          <button className="px-3 py-1.5 border border-gray-400 rounded hover:bg-japura-bg flex items-center gap-2 text-sm">
+            <RefreshCw size={14} />
             <span>Recalcular</span>
           </button>
-          <button className="px-4 py-2 bg-orange-600 text-white rounded-japura hover:bg-orange-700 flex items-center gap-2 transition-colors font-semibold">
-            <Download size={18} />
+          <button className="px-3 py-1.5 bg-japura-dark text-white rounded hover:bg-japura-black flex items-center gap-2 text-sm">
+            <Download size={14} />
             <span>Exportar Excel</span>
           </button>
         </div>
       </div>
 
       {/* Filtros */}
-      <div className="bg-japura-white rounded-japura shadow-sm border border-gray-200 p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Filter size={18} className="text-japura-grey" />
-          <h3 className="text-sm font-bold text-japura-dark uppercase">Filtros</h3>
+      <div className="bg-japura-white rounded border border-gray-400 p-3">
+        <div className="flex items-center gap-2 mb-2">
+          <Filter size={14} className="text-japura-grey" />
+          <h3 className="text-xs font-semibold text-japura-dark uppercase">Filtros</h3>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
           <div>
-            <label className="block text-xs font-semibold text-japura-grey mb-2">Filial</label>
+            <label className="block text-xs font-medium text-japura-grey mb-1">Filial</label>
             <select
               value={selectedFilial}
               onChange={(e) => setSelectedFilial(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-japura focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
+              className="w-full px-2 py-1.5 border border-gray-400 rounded text-sm focus:outline-none focus:ring-1 focus:ring-japura-dark"
             >
               <option value="todas">Todas as Filiais</option>
               <option value="manaus">Manaus</option>
@@ -224,11 +224,11 @@ export default function JapDistribution() {
             </select>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-japura-grey mb-2">Prioridade</label>
+            <label className="block text-xs font-medium text-japura-grey mb-1">Prioridade</label>
             <select 
               value={selectedPrioridade}
               onChange={(e) => setSelectedPrioridade(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-japura focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
+              className="w-full px-2 py-1.5 border border-gray-400 rounded text-sm focus:outline-none focus:ring-1 focus:ring-japura-dark"
             >
               <option value="todas">Todas</option>
               <option value="alta">Alta</option>
@@ -237,7 +237,7 @@ export default function JapDistribution() {
             </select>
           </div>
           <div className="flex items-end">
-            <button className="w-full px-4 py-2 bg-orange-600 text-white rounded-japura hover:bg-orange-700 transition-colors font-semibold">
+            <button className="w-full px-3 py-1.5 bg-japura-dark text-white rounded hover:bg-japura-black text-sm">
               Aplicar Filtros
             </button>
           </div>
@@ -245,91 +245,72 @@ export default function JapDistribution() {
       </div>
 
       {/* KPIs */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-6 rounded-japura shadow-sm border border-orange-200">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-orange-500 rounded-lg text-white shadow-md">
-              <Package size={24} />
-            </div>
-            <span className="text-xs font-bold text-orange-700 bg-orange-200 px-2 py-1 rounded">
-              {kpis.total}
-            </span>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+        <div className="bg-japura-white p-2 rounded border border-gray-400 flex items-center gap-2">
+          <div className="p-1.5 bg-japura-bg rounded border border-gray-200 shrink-0">
+            <Package size={14} className="text-japura-dark" />
           </div>
-          <p className="text-xs font-bold text-orange-700 uppercase tracking-wider mb-1">Sugestões Geradas</p>
-          <p className="text-3xl font-black text-japura-black">{kpis.total}</p>
-          <p className="text-xs text-orange-600 mt-2">Filtradas</p>
+          <div>
+            <p className="text-[11px] font-medium text-japura-grey uppercase">Sugestões Geradas</p>
+            <p className="text-base font-semibold text-japura-black tabular-nums">{kpis.total}</p>
+            <p className="text-[11px] text-japura-grey">Filtradas</p>
+          </div>
         </div>
-        <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-japura shadow-sm border border-green-200">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-green-500 rounded-lg text-white shadow-md">
-              <CheckCircle2 size={24} />
-            </div>
-            <span className="text-xs font-bold text-green-700 bg-green-200 px-2 py-1 rounded">
-              {kpis.aprovadas}
-            </span>
+        <div className="bg-japura-white p-2 rounded border border-gray-400 flex items-center gap-2">
+          <div className="p-1.5 bg-gray-100 rounded border border-gray-200 shrink-0">
+            <CheckCircle2 size={14} className="text-japura-dark" />
           </div>
-          <p className="text-xs font-bold text-green-700 uppercase tracking-wider mb-1">Aprovadas</p>
-          <p className="text-3xl font-black text-japura-black">{kpis.aprovadas}</p>
-          <p className="text-xs text-green-600 mt-2">
-            {kpis.total > 0 ? Math.round((kpis.aprovadas / kpis.total) * 100) : 0}% do total
-          </p>
+          <div>
+            <p className="text-[11px] font-medium text-japura-grey uppercase">Aprovadas</p>
+            <p className="text-base font-semibold text-japura-black tabular-nums">{kpis.aprovadas}</p>
+            <p className="text-[11px] text-japura-grey">{kpis.total > 0 ? Math.round((kpis.aprovadas / kpis.total) * 100) : 0}% do total</p>
+          </div>
         </div>
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-japura shadow-sm border border-blue-200">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-blue-500 rounded-lg text-white shadow-md">
-              <TrendingUp size={24} />
-            </div>
-            <span className="text-xs font-bold text-blue-700 bg-blue-200 px-2 py-1 rounded">
-              {kpis.altaPrioridade}
-            </span>
+        <div className="bg-japura-white p-2 rounded border border-gray-400 flex items-center gap-2">
+          <div className="p-1.5 bg-japura-bg rounded border border-gray-200 shrink-0">
+            <TrendingUp size={14} className="text-japura-dark" />
           </div>
-          <p className="text-xs font-bold text-blue-700 uppercase tracking-wider mb-1">Economia Estimada</p>
-          <p className="text-3xl font-black text-japura-black">
-            R$ {(kpis.economia / 1000).toFixed(0)}K
-          </p>
-          <p className="text-xs text-blue-600 mt-2">Com otimização</p>
+          <div>
+            <p className="text-[11px] font-medium text-japura-grey uppercase">Economia Estimada</p>
+            <p className="text-base font-semibold text-japura-black tabular-nums">R$ {(kpis.economia / 1000).toFixed(0)}K</p>
+            <p className="text-[11px] text-japura-grey">Com otimização</p>
+          </div>
         </div>
-        <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-japura shadow-sm border border-purple-200">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-purple-500 rounded-lg text-white shadow-md">
-              <AlertCircle size={24} />
-            </div>
-            <span className="text-xs font-bold text-purple-700 bg-purple-200 px-2 py-1 rounded">
-              {kpis.altaPrioridade}
-            </span>
+        <div className="bg-japura-white p-2 rounded border border-gray-400 flex items-center gap-2">
+          <div className="p-1.5 bg-japura-bg rounded border border-gray-200 shrink-0">
+            <AlertCircle size={14} className="text-japura-dark" />
           </div>
-          <p className="text-xs font-bold text-purple-700 uppercase tracking-wider mb-1">Alta Prioridade</p>
-          <p className="text-3xl font-black text-japura-black">{kpis.altaPrioridade}</p>
-          <p className="text-xs text-purple-600 mt-2">Requerem atenção</p>
+          <div>
+            <p className="text-[11px] font-medium text-japura-grey uppercase">Alta Prioridade</p>
+            <p className="text-base font-semibold text-japura-black tabular-nums">{kpis.altaPrioridade}</p>
+            <p className="text-[11px] text-japura-grey">Requerem atenção</p>
+          </div>
         </div>
       </div>
 
       {/* Gráfico de Estoque por Filial */}
-      <div className="bg-japura-white rounded-japura shadow-sm border border-gray-200 p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-black text-japura-black flex items-center gap-2">
-            <BarChart3 size={20} />
-            Estoque por Filial
-          </h3>
-        </div>
-        <div className="space-y-3">
-          {estoquePorFilial.map((item, index) => (
-            <div key={item.filial} className="space-y-1">
-              <div className="flex items-center justify-between text-sm">
-                <span className="font-semibold text-japura-dark">{item.filial}</span>
+      <div className="bg-japura-white rounded border border-gray-400 p-3">
+        <h3 className="text-base font-semibold text-japura-black mb-2 flex items-center gap-2">
+          <BarChart3 size={16} />
+          Estoque por Filial
+        </h3>
+        <div className="space-y-2">
+          {estoquePorFilial.map((item) => (
+            <div key={item.filial} className="space-y-0.5">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-medium text-japura-dark">{item.filial}</span>
                 <span className="text-japura-grey tabular-nums">
-                  {item.estoqueTotal.toLocaleString('pt-BR')} unidades
-                </span>
+                  {item.estoqueTotal.toLocaleString('pt-BR')} un.</span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+              <div className="w-full bg-gray-200 rounded h-2 overflow-hidden">
                 <div
-                  className="bg-gradient-to-r from-orange-500 to-orange-600 h-full rounded-full transition-all duration-500"
+                  className="bg-japura-dark h-full rounded transition-all"
                   style={{ width: `${(item.estoqueTotal / maxEstoque) * 100}%` }}
                 />
               </div>
               {item.produtosCriticos > 0 && (
-                <p className="text-xs text-red-600 flex items-center gap-1">
-                  <AlertCircle size={12} />
+                <p className="text-[11px] text-japura-dark flex items-center gap-1">
+                  <AlertCircle size={10} />
                   {item.produtosCriticos} produto(s) com risco de ruptura
                 </p>
               )}
@@ -339,11 +320,11 @@ export default function JapDistribution() {
       </div>
 
       {/* Lista de Sugestões */}
-      <div className="space-y-4">
+      <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-black text-japura-black">Sugestões de Distribuição</h3>
-          <span className="text-sm text-japura-grey">
-            Mostrando {sugestoesFiltradas.length} de {sugestoes.length} sugestões
+          <h3 className="text-base font-semibold text-japura-black">Sugestões de Distribuição</h3>
+          <span className="text-xs text-japura-grey">
+            {sugestoesFiltradas.length} de {sugestoes.length} sugestões
           </span>
         </div>
         {sugestoesFiltradas.map((sugestao) => {
@@ -351,95 +332,66 @@ export default function JapDistribution() {
           return (
             <div
               key={sugestao.id}
-              className={`bg-japura-white rounded-japura shadow-sm border-2 p-6 transition-all ${
-                isAprovada 
-                  ? 'border-green-300 bg-green-50/30' 
-                  : `border-${sugestao.prioridade === 'alta' ? 'red' : sugestao.prioridade === 'media' ? 'yellow' : 'green'}-200`
-              } hover:shadow-md`}
+              className={`bg-japura-white rounded border p-3 transition-colors ${
+                isAprovada ? 'border-gray-400 bg-gray-50' : 'border-gray-400'
+              } hover:bg-japura-bg`}
             >
-              <div className="flex justify-between items-start mb-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2 flex-wrap">
-                    <h3 className="text-lg font-black text-japura-black">{sugestao.produto}</h3>
-                    <span className="text-sm text-japura-grey">({sugestao.sku})</span>
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${getPrioridadeColor(sugestao.prioridade)}`}>
-                      Prioridade {sugestao.prioridade.toUpperCase()}
+              <div className="flex justify-between items-start gap-3">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-2 flex-wrap">
+                    <h3 className="text-sm font-semibold text-japura-black">{sugestao.produto}</h3>
+                    <span className="text-xs text-japura-grey">({sugestao.sku})</span>
+                    <span className={`px-2 py-0.5 rounded text-xs font-medium border ${getPrioridadeColor(sugestao.prioridade)}`}>
+                      {sugestao.prioridade}
                     </span>
-                    <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs font-semibold">
+                    <span className="px-1.5 py-0.5 bg-gray-100 text-japura-grey rounded text-xs">
                       {sugestao.categoria}
                     </span>
                     {isAprovada && (
-                      <span className="px-3 py-1 bg-green-500 text-white rounded-full text-xs font-semibold flex items-center gap-1">
-                        <CheckCircle2 size={12} />
+                      <span className="px-2 py-0.5 bg-japura-dark text-white rounded text-xs font-medium flex items-center gap-1">
+                        <CheckCircle2 size={10} />
                         Aprovada
                       </span>
                     )}
                   </div>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
                     <div>
-                      <p className="text-xs font-semibold text-japura-grey uppercase mb-1">Origem</p>
-                      <p className="text-sm font-semibold text-japura-black flex items-center gap-1">
-                        <ArrowLeftRight size={14} />
-                        {sugestao.filialOrigem}
-                      </p>
+                      <span className="text-japura-grey">Origem: </span>
+                      <span className="text-japura-dark">{sugestao.filialOrigem}</span>
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-japura-grey uppercase mb-1">Destino</p>
-                      <p className="text-sm font-semibold text-japura-black flex items-center gap-1">
-                        <MapPin size={14} />
-                        {sugestao.filialDestino}
-                      </p>
+                      <span className="text-japura-grey">Destino: </span>
+                      <span className="text-japura-dark">{sugestao.filialDestino}</span>
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-japura-grey uppercase mb-1">Quantidade</p>
-                      <p className="text-sm font-black text-japura-black">{sugestao.quantidade.toLocaleString('pt-BR')} unidades</p>
+                      <span className="text-japura-grey">Qtd: </span>
+                      <span className="text-japura-black font-medium">{sugestao.quantidade.toLocaleString('pt-BR')}</span>
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-japura-grey uppercase mb-1">Estoque Atual</p>
-                      <p className="text-sm text-japura-dark">{sugestao.estoqueAtual.toLocaleString('pt-BR')} unidades</p>
+                      <span className="text-japura-grey">Economia: </span>
+                      <span className="text-japura-dark">R$ {(sugestao.economiaEstimada / 1000).toFixed(1)}K</span>
                     </div>
                   </div>
-                  <div className="mt-4 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
-                    <p className="text-xs font-semibold text-japura-grey uppercase mb-1">Justificativa</p>
-                    <p className="text-sm text-japura-dark">{sugestao.justificativa}</p>
-                    <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
-                      <div className="flex items-center gap-2 text-japura-grey">
-                        <TrendingUp size={14} />
-                        <span>Vendas médias: {sugestao.vendasMedias.toLocaleString('pt-BR')}/mês</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-japura-grey">
-                        <Package size={14} />
-                        <span>Estoque atual: {sugestao.estoqueAtual.toLocaleString('pt-BR')}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-green-600">
-                        <TrendingUp size={14} />
-                        <span>Economia: R$ {(sugestao.economiaEstimada / 1000).toFixed(1)}K</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-japura-grey">
-                        <Truck size={14} />
-                        <span>Trânsito: {sugestao.tempoTransito} dias</span>
-                      </div>
-                    </div>
-                  </div>
+                  <p className="text-xs text-japura-grey mt-1.5 border-l-2 border-gray-300 pl-2">{sugestao.justificativa}</p>
                 </div>
-                <div className="ml-6 flex flex-col gap-2">
+                <div className="flex flex-col gap-1 shrink-0">
                   {!isAprovada ? (
                     <>
                       <button 
                         onClick={() => handleAprovar(sugestao.id)}
-                        className="px-4 py-2 bg-green-600 text-white rounded-japura hover:bg-green-700 flex items-center gap-2 transition-colors font-semibold shadow-sm"
+                        className="px-3 py-1.5 bg-japura-dark text-white rounded hover:bg-japura-black flex items-center gap-1 text-sm"
                       >
-                        <CheckCircle2 size={18} />
+                        <CheckCircle2 size={14} />
                         <span>Aprovar</span>
                       </button>
-                      <button className="px-4 py-2 border border-gray-300 rounded-japura hover:bg-gray-50 flex items-center gap-2 transition-colors">
-                        <AlertCircle size={18} />
+                      <button className="px-3 py-1.5 border border-gray-400 rounded hover:bg-japura-bg flex items-center gap-1 text-sm">
+                        <AlertCircle size={14} />
                         <span>Revisar</span>
                       </button>
                     </>
                   ) : (
-                    <button className="px-4 py-2 bg-gray-300 text-gray-600 rounded-japura flex items-center gap-2 cursor-not-allowed">
-                      <CheckCircle2 size={18} />
+                    <button className="px-3 py-1.5 bg-gray-200 text-japura-grey rounded flex items-center gap-1 text-sm cursor-default">
+                      <CheckCircle2 size={14} />
                       <span>Aprovada</span>
                     </button>
                   )}
@@ -451,16 +403,16 @@ export default function JapDistribution() {
       </div>
 
       {/* Mapa de Distribuição Placeholder */}
-      <div className="bg-japura-white rounded-japura shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-black text-japura-black mb-4 flex items-center gap-2">
-          <MapPin size={20} />
+      <div className="bg-japura-white rounded border border-gray-400 p-3">
+        <h3 className="text-base font-semibold text-japura-black mb-2 flex items-center gap-2">
+          <MapPin size={16} />
           Mapa de Distribuição
         </h3>
-        <div className="h-64 flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border-2 border-dashed border-gray-300">
+        <div className="h-48 flex items-center justify-center bg-japura-bg rounded border border-dashed border-gray-400">
           <div className="text-center">
-            <MapPin size={48} className="mx-auto text-japura-grey mb-2" />
-            <p className="text-japura-grey font-semibold">Mapa interativo será implementado aqui</p>
-            <p className="text-xs text-japura-grey mt-2">Visualização geográfica das rotas de distribuição</p>
+            <MapPin size={32} className="mx-auto text-japura-grey mb-1" />
+            <p className="text-xs text-japura-grey font-medium">Mapa interativo será implementado aqui</p>
+            <p className="text-[11px] text-japura-grey mt-0.5">Visualização geográfica das rotas de distribuição</p>
           </div>
         </div>
       </div>

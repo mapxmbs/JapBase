@@ -708,6 +708,15 @@ O JapMarket é o **único módulo responsável por precificação** no JapBase.
 - APIs de IA para normalização
 - Supabase: schemas `market.shopping_precos`, `market.historico_precos`
 
+**Fluxo de Upload de Orçamentos (manual)**:
+Quando o usuário sobe uma planilha de preços de concorrente (obtida por busca manual), o fluxo segue:
+1. **Upload** do arquivo (Excel, PDF)
+2. **Conversão para texto/estrutura** (Excel: parse direto; PDF: OCR ou IA – em desenvolvimento)
+3. **Mapeamento para o modelo padrão** da planilha de comparação
+4. **Inserção no grid** com fonte explícita (ex.: "Upload manual por Fulano")
+
+> 📄 Detalhes em `docs/japmarket-upload-flow.md`
+
 ---
 
 ### 5.3. JapDistribution – Planejamento Estratégico de Distribuição

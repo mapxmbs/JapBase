@@ -19,21 +19,18 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import AIAssistant from '@/components/ui/AIAssistant';
-import { 
-  getPimps, 
-  getProdutosByPimpId, 
+import {
+  getPimps,
+  getPimpsWithProdutos,
+  getProdutosByPimpId,
   getAllProdutos,
   getPimpsTransito,
   getPimpsRecebidos,
   testSupabaseConnection,
-  updatePimp, 
   getPimpsCountByStatus,
-  type Pimp as PimpService,
-  type ProdutoPimp as ProdutoPimpService,
-  type PimpTransito as PimpTransitoService,
-  type PimpRecebido as PimpRecebidoService
-} from '@/services/pimpsService';
+  updatePimp,
+} from '@/lib/japimportApi';
+import type { Pimp as PimpService, ProdutoPimp as ProdutoPimpService, PimpTransito as PimpTransitoService, PimpRecebido as PimpRecebidoService } from '@/services/japimport';
 
 type MainTab = 'pimps' | 'produtos' | 'transito' | 'recebidos';
 type PimpStatus = 'ativo' | 'finalizado' | 'historico';
@@ -236,51 +233,31 @@ export default function JapImport() {
     }
   }
 
-  // Carregar dados do Supabase
+  // Carregar dados via API (server-side com service_role - bypass RLS)
   const loadPimps = async () => {
     setIsLoading(true)
     setError(null)
     
     try {
-      console.log('Carregando PIMPs do Supabase...')
+      console.log('Carregando PIMPs via API...')
       
-      // Buscar contagens
-      const counts = await getPimpsCountByStatus()
+      const [counts, pimpsComProdutos] = await Promise.all([
+        getPimpsCountByStatus(),
+        getPimpsWithProdutos({ search: searchTerm || undefined }),
+      ])
+
+      const ativosComProdutos = pimpsComProdutos
+        .filter((p: any) => p.status !== 'Concluído')
+        .map((pimp: any) => convertPimpFromSupabase(pimp, pimp.produtos || []))
+      
+      const finalizadosComProdutos = pimpsComProdutos
+        .filter((p: any) => p.status === 'Concluído')
+        .map((pimp: any) => convertPimpFromSupabase(pimp, pimp.produtos || []))
+
       setPimpsCounts(counts)
-
-      // Buscar PIMPs ativos
-      const ativos = await getPimps({ 
-        status: undefined,
-        search: searchTerm || undefined 
-      })
-      console.log('PIMPs ativos encontrados:', ativos.length)
-      
-      const ativosFiltrados = ativos.filter(p => p.status !== 'Concluído')
-      
-      // Carregar produtos para cada PIMP ativo
-      const ativosComProdutos = await Promise.all(
-        ativosFiltrados.map(async (pimp) => {
-          const produtos = await getProdutosByPimpId(pimp.id)
-          return convertPimpFromSupabase(pimp, produtos)
-        })
-      )
       setPimpsAtivos(ativosComProdutos)
-
-      // Buscar PIMPs finalizados
-      const finalizados = await getPimps({ 
-        status: 'Concluído',
-        search: searchTerm || undefined 
-      })
-      console.log('PIMPs finalizados encontrados:', finalizados.length)
-      
-      // Carregar produtos para cada PIMP finalizado
-      const finalizadosComProdutos = await Promise.all(
-        finalizados.map(async (pimp) => {
-          const produtos = await getProdutosByPimpId(pimp.id)
-          return convertPimpFromSupabase(pimp, produtos)
-        })
-      )
       setPimpsFinalizados(finalizadosComProdutos)
+      console.log('PIMPs carregados:', ativosComProdutos.length, 'ativos,', finalizadosComProdutos.length, 'finalizados')
 
     } catch (err: any) {
       console.error('Erro ao carregar PIMPs:', err)
@@ -594,19 +571,19 @@ export default function JapImport() {
 
   return (
     <div className="h-full flex flex-col">
-      {/* Header Compacto */}
-      <div className="flex items-center justify-between pb-2 border-b border-gray-300 mb-2">
+      {/* Header - estilo corporativo */}
+      <div className="flex items-center justify-between pb-1.5 border-b border-gray-400 mb-1.5">
         <div>
-          <h1 className="text-2xl font-black text-japura-black">JapImport</h1>
+          <h1 className="text-lg font-semibold text-japura-black">JapImport</h1>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           {error && (
-            <div className="flex items-center gap-2 text-xs text-red-600 bg-red-50 px-3 py-1.5 rounded border border-red-200">
+            <div className="flex items-center gap-2 text-xs text-japura-dark bg-japura-bg px-2 py-1 rounded border border-gray-400">
               <AlertCircle size={14} />
               <span>{error}</span>
               <button 
                 onClick={() => handleRefresh()}
-                className="text-red-700 hover:text-red-900 font-semibold"
+                className="text-japura-dark hover:text-japura-black font-semibold"
               >
                 Tentar novamente
               </button>
@@ -619,13 +596,13 @@ export default function JapImport() {
             </div>
           )}
           <div className="flex items-center gap-2 text-xs">
-            <DollarSign size={14} className="text-green-600" />
+            <DollarSign size={12} className="text-japura-dark" />
             <span className="text-japura-grey">USD:</span>
             <span className="font-semibold text-japura-black">R$ {dolarHoje.toFixed(2)}</span>
           </div>
           <button
             onClick={handleRefresh}
-            className="px-2 py-1 border border-gray-300 rounded text-xs hover:bg-gray-50 flex items-center gap-1"
+            className="px-2 py-1 border border-gray-400 rounded text-xs hover:bg-japura-bg flex items-center gap-1"
             title="Atualizar dados"
           >
             <RefreshCw size={12} />
@@ -633,7 +610,7 @@ export default function JapImport() {
           </button>
           <button
             onClick={handleTestConnection}
-            className="px-2 py-1 border border-gray-300 rounded text-xs hover:bg-gray-50 flex items-center gap-1 disabled:opacity-60"
+            className="px-2 py-1 border border-gray-400 rounded text-xs hover:bg-japura-bg flex items-center gap-1 disabled:opacity-60"
             title="Testar conexão com banco de dados"
             disabled={isTestingConnection}
           >
@@ -645,10 +622,10 @@ export default function JapImport() {
 
       {dbStatusMessage && (
         <div
-          className={`mb-2 px-3 py-1.5 rounded text-xs flex items-center gap-2 ${
+          className={`mb-1.5 px-2 py-1 rounded text-xs flex items-center gap-2 border ${
             dbStatusOk === false
-              ? 'bg-red-50 text-red-700 border border-red-200'
-              : 'bg-green-50 text-green-700 border border-green-200'
+              ? 'bg-japura-bg text-japura-dark border-gray-400'
+              : 'bg-japura-bg text-japura-dark border-gray-400'
           }`}
         >
           <AlertCircle size={14} />
@@ -656,15 +633,15 @@ export default function JapImport() {
         </div>
       )}
 
-      {/* Abas Principais: PIMPs, Gripmaster, Trânsito, Recebidos */}
-      <div className="flex gap-1 border-b border-gray-300 mb-2">
+      {/* Abas Principais */}
+      <div className="flex gap-1 border-b border-gray-400 mb-1.5">
         <button
           onClick={() => {
             setMainTab('pimps')
             setSelectedPimpId(null)
           }}
           className={`
-            px-4 py-2 text-sm font-semibold transition-colors relative
+            px-2 py-1.5 text-xs font-medium transition-colors relative
             ${mainTab === 'pimps'
               ? 'text-japura-black border-b-2 border-japura-black'
               : 'text-japura-grey hover:text-japura-black'}
@@ -681,7 +658,7 @@ export default function JapImport() {
             loadProdutos()
           }}
           className={`
-            px-4 py-2 text-sm font-semibold transition-colors relative
+            px-2 py-1.5 text-xs font-medium transition-colors relative
             ${mainTab === 'produtos'
               ? 'text-japura-black border-b-2 border-japura-black'
               : 'text-japura-grey hover:text-japura-black'}
@@ -698,7 +675,7 @@ export default function JapImport() {
             loadTransito()
           }}
           className={`
-            px-4 py-2 text-sm font-semibold transition-colors relative
+            px-2 py-1.5 text-xs font-medium transition-colors relative
             ${mainTab === 'transito'
               ? 'text-japura-black border-b-2 border-japura-black'
               : 'text-japura-grey hover:text-japura-black'}
@@ -715,7 +692,7 @@ export default function JapImport() {
             loadRecebidos()
           }}
           className={`
-            px-4 py-2 text-sm font-semibold transition-colors relative
+            px-2 py-1.5 text-xs font-medium transition-colors relative
             ${mainTab === 'recebidos'
               ? 'text-japura-black border-b-2 border-japura-black'
               : 'text-japura-grey hover:text-japura-black'}
@@ -728,27 +705,27 @@ export default function JapImport() {
         </button>
       </div>
 
-      {/* Filtro de PIMP selecionado (quando em Produtos ou Trânsito) */}
+      {/* Filtro de PIMP selecionado */}
       {mainTab !== 'pimps' && selectedPimpId && (
-        <div className="mb-2 px-3 py-2 bg-blue-50 border border-blue-200 rounded flex items-center justify-between">
+        <div className="mb-1.5 px-2 py-1.5 bg-japura-bg border border-gray-400 rounded flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-blue-700">Filtrando por PIMP:</span>
-            <span className="text-sm font-semibold text-blue-900">
+            <span className="text-xs text-japura-grey">Filtrando por PIMP:</span>
+            <span className="text-xs font-semibold text-japura-black">
               {[...pimpsAtivos, ...pimpsFinalizados].find(p => p.id === selectedPimpId)?.numero || selectedPimpId}
             </span>
           </div>
           <button
             onClick={handleClearPimpSelection}
-            className="text-xs text-blue-700 hover:text-blue-900 font-semibold"
+            className="text-xs text-japura-dark hover:text-japura-black font-medium"
           >
             Limpar filtro
           </button>
         </div>
       )}
 
-      {/* Sub-abas para PIMPs (Ativos, Finalizados, Histórico) */}
+      {/* Sub-abas PIMPs */}
       {mainTab === 'pimps' && (
-        <div className="flex gap-1 border-b border-gray-300 mb-2">
+        <div className="flex gap-1 border-b border-gray-400 mb-1.5">
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -769,8 +746,8 @@ export default function JapImport() {
         </div>
       )}
 
-      {/* Barra de Ações Compacta - Estilo Excel */}
-      <div className="flex items-center justify-between py-1.5 px-2 bg-gray-50 border border-gray-300 rounded mb-2">
+      {/* Barra de Ações - estilo Excel */}
+      <div className="flex items-center justify-between py-1 px-2 bg-japura-bg border border-gray-400 rounded mb-1.5">
         <div className="flex items-center gap-1.5">
           <div className="relative">
             <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-japura-grey" size={14} />
@@ -779,12 +756,12 @@ export default function JapImport() {
               placeholder="Buscar..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-7 pr-2 py-1 border border-gray-300 rounded text-xs w-48 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="pl-6 pr-2 py-1 border border-gray-400 rounded text-xs w-40 focus:outline-none focus:ring-1 focus:ring-japura-dark"
             />
           </div>
           <button
             onClick={() => setShowColorConfig(!showColorConfig)}
-            className={`px-2 py-1 border border-gray-300 rounded text-xs flex items-center gap-1 hover:bg-white ${
+            className={`px-2 py-1 border border-gray-400 rounded text-xs flex items-center gap-1 hover:bg-japura-white ${
               showColorConfig ? 'bg-japura-dark text-white' : ''
             }`}
             title="Cores"
@@ -794,7 +771,7 @@ export default function JapImport() {
           </button>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="flex items-center border border-gray-300 rounded overflow-hidden">
+          <div className="flex items-center border border-gray-400 rounded overflow-hidden">
             <button
               onClick={() => setViewMode('table')}
               className={`px-2 py-1 text-xs flex items-center gap-1 ${
@@ -816,7 +793,7 @@ export default function JapImport() {
           </div>
           <button
             onClick={() => setShowExportModal(true)}
-            className="px-2 py-1 border border-gray-300 rounded text-xs flex items-center gap-1 hover:bg-white"
+            className="px-2 py-1 border border-gray-400 rounded text-xs flex items-center gap-1 hover:bg-japura-white"
             title="Exportar"
           >
             <Download size={12} />
@@ -832,7 +809,7 @@ export default function JapImport() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="bg-white border border-gray-300 rounded p-2 mb-2 overflow-hidden"
+            className="bg-japura-white border border-gray-400 rounded p-2 mb-1.5 overflow-hidden"
           >
             <div className="flex items-center gap-2 flex-wrap">
               <span className="text-xs font-semibold text-japura-grey">Legenda:</span>
@@ -852,10 +829,10 @@ export default function JapImport() {
 
       {/* Grid Principal - MÁXIMO ESPAÇO */}
       {viewMode === 'table' && mainTab === 'pimps' && (
-        <div className="flex-1 bg-white border border-gray-300 rounded overflow-hidden flex flex-col">
+        <div className="flex-1 bg-japura-white border border-gray-400 rounded overflow-hidden flex flex-col">
           <div className="flex-1 overflow-auto">
             <table className="w-full border-collapse" style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px' }}>
-              <thead className="sticky top-0 z-20 bg-gray-200">
+              <thead className="sticky top-0 z-20 bg-gray-200 border-b border-gray-400">
                 <tr className="border-b border-gray-400">
                   <th className="px-2 py-1.5 text-left text-xs font-bold text-japura-black uppercase border-r border-gray-400 bg-gray-200 w-6">
                   </th>
@@ -956,6 +933,44 @@ export default function JapImport() {
                 </tr>
               </thead>
               <tbody>
+                {filteredPimps.length === 0 && !isLoading && (
+                  <tr>
+                    <td colSpan={11} className="px-4 py-6 text-center">
+                      <div className="text-japura-grey text-sm">
+                        {error ? (
+                          <span>{error}</span>
+                        ) : (
+                          <>
+                            <p className="font-semibold mb-2">Nenhum PIMP encontrado</p>
+                            <p className="text-xs mb-3">Se há dados no Supabase, verifique a conexão.</p>
+                            <div className="flex gap-2 justify-center">
+                              <button
+                                onClick={handleRefresh}
+                                className="px-2 py-1 bg-japura-dark text-white rounded text-xs font-medium hover:bg-japura-black"
+                              >
+                                Atualizar
+                              </button>
+                              <button
+                                onClick={handleTestConnection}
+                                className="px-2 py-1 border border-gray-400 rounded text-xs hover:bg-japura-bg"
+                              >
+                                Testar banco
+                              </button>
+                              <a
+                                href="/api/japimport/debug"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="px-2 py-1 border border-gray-400 rounded text-xs hover:bg-japura-bg"
+                              >
+                                Diagnóstico
+                              </a>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                )}
                 {filteredPimps.map((pimp, index) => {
                   const rowColor = getRowColor(pimp);
                   const isEditing = editingCell?.rowId === pimp.id;
@@ -990,7 +1005,7 @@ export default function JapImport() {
                                 onChange={(e) => setEditValue(e.target.value)}
                                 onBlur={handleSaveEdit}
                                 onKeyPress={(e) => e.key === 'Enter' && handleSaveEdit()}
-                                className="w-full px-1 py-0.5 border border-blue-500 rounded text-xs focus:outline-none"
+                                className="w-full px-1 py-0.5 border border-japura-dark rounded text-xs focus:outline-none"
                                 autoFocus
                               />
                               <button onClick={handleSaveEdit} className="text-green-600">
@@ -1002,7 +1017,7 @@ export default function JapImport() {
                             </div>
                           ) : (
                             <div
-                              className="cursor-pointer hover:bg-blue-50 px-1 py-0.5 rounded flex items-center gap-1 group"
+                              className="cursor-pointer hover:bg-japura-bg px-1 py-0.5 rounded flex items-center gap-1 group"
                               onClick={() => handleCellEdit(pimp.id, 'fornecedor', pimp.fornecedor)}
                             >
                               <span>{pimp.fornecedor}</span>
@@ -1020,7 +1035,7 @@ export default function JapImport() {
                                 onChange={(e) => setEditValue(e.target.value)}
                                 onBlur={handleSaveEdit}
                                 onKeyPress={(e) => e.key === 'Enter' && handleSaveEdit()}
-                                className="w-full px-1 py-0.5 border border-blue-500 rounded text-xs focus:outline-none"
+                                className="w-full px-1 py-0.5 border border-japura-dark rounded text-xs focus:outline-none"
                                 autoFocus
                               />
                               <button onClick={handleSaveEdit} className="text-green-600">
@@ -1032,7 +1047,7 @@ export default function JapImport() {
                             </div>
                           ) : (
                             <div
-                              className="cursor-pointer hover:bg-blue-50 px-1 py-0.5 rounded flex items-center gap-1 group"
+                              className="cursor-pointer hover:bg-japura-bg px-1 py-0.5 rounded flex items-center gap-1 group"
                               onClick={() => handleCellEdit(pimp.id, 'produto', pimp.produto)}
                             >
                               <span>{pimp.produto || '-'}</span>
@@ -1062,7 +1077,7 @@ export default function JapImport() {
                             </div>
                           ) : (
                             <div
-                              className="cursor-pointer hover:bg-blue-50 px-1 py-0.5 rounded inline-block group"
+                              className="cursor-pointer hover:bg-japura-bg px-1 py-0.5 rounded inline-block group"
                               onClick={() => handleCellEdit(pimp.id, 'quantidade', pimp.quantidade)}
                             >
                               {pimp.quantidade.toLocaleString('pt-BR')}
@@ -1093,7 +1108,7 @@ export default function JapImport() {
                             </div>
                           ) : (
                             <div
-                              className="cursor-pointer hover:bg-blue-50 px-1 py-0.5 rounded inline-block group"
+                              className="cursor-pointer hover:bg-japura-bg px-1 py-0.5 rounded inline-block group"
                               onClick={() => handleCellEdit(pimp.id, 'valorUsd', pimp.valorUsd)}
                             >
                               {pimp.valorUsd.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
@@ -1121,7 +1136,7 @@ export default function JapImport() {
                                 onChange={(e) => setEditValue(e.target.value)}
                                 onBlur={handleSaveEdit}
                                 onKeyPress={(e) => e.key === 'Enter' && handleSaveEdit()}
-                                className="w-full px-1 py-0.5 border border-blue-500 rounded text-xs focus:outline-none"
+                                className="w-full px-1 py-0.5 border border-japura-dark rounded text-xs focus:outline-none"
                                 autoFocus
                               />
                               <button onClick={handleSaveEdit} className="text-green-600">
@@ -1133,7 +1148,7 @@ export default function JapImport() {
                             </div>
                           ) : (
                             <div
-                              className="cursor-pointer hover:bg-blue-50 px-1 py-0.5 rounded flex items-center gap-1 group"
+                              className="cursor-pointer hover:bg-japura-bg px-1 py-0.5 rounded flex items-center gap-1 group"
                               onClick={() => handleCellEdit(pimp.id, 'dataInicio', pimp.dataInicio)}
                             >
                               {pimp.dataInicio ? new Date(pimp.dataInicio).toLocaleDateString('pt-BR') : '-'}
@@ -1151,7 +1166,7 @@ export default function JapImport() {
                                 onChange={(e) => setEditValue(e.target.value)}
                                 onBlur={handleSaveEdit}
                                 onKeyPress={(e) => e.key === 'Enter' && handleSaveEdit()}
-                                className="w-full px-1 py-0.5 border border-blue-500 rounded text-xs focus:outline-none"
+                                className="w-full px-1 py-0.5 border border-japura-dark rounded text-xs focus:outline-none"
                                 autoFocus
                               />
                               <button onClick={handleSaveEdit} className="text-green-600">
@@ -1163,7 +1178,7 @@ export default function JapImport() {
                             </div>
                           ) : (
                             <div
-                              className="cursor-pointer hover:bg-blue-50 px-1 py-0.5 rounded flex items-center gap-1 group"
+                              className="cursor-pointer hover:bg-japura-bg px-1 py-0.5 rounded flex items-center gap-1 group"
                               onClick={() => handleCellEdit(pimp.id, 'dataPrevista', pimp.dataPrevista)}
                             >
                               {pimp.dataPrevista ? new Date(pimp.dataPrevista).toLocaleDateString('pt-BR') : '-'}
@@ -1325,10 +1340,10 @@ export default function JapImport() {
 
       {/* Grid Gripmaster (Produtos) */}
       {viewMode === 'table' && mainTab === 'produtos' && (
-        <div className="flex-1 bg-white border border-gray-300 rounded overflow-hidden flex flex-col">
+        <div className="flex-1 bg-japura-white border border-gray-400 rounded overflow-hidden flex flex-col">
           <div className="flex-1 overflow-auto">
             <table className="w-full border-collapse" style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px' }}>
-              <thead className="sticky top-0 z-20 bg-gray-200">
+              <thead className="sticky top-0 z-20 bg-gray-200 border-b border-gray-400">
                 <tr className="border-b border-gray-400">
                   <th className="px-2 py-1.5 text-left text-xs font-bold text-japura-black uppercase border-r border-gray-400 bg-gray-200 min-w-[100px]">PIMP</th>
                   <th className="px-2 py-1.5 text-left text-xs font-bold text-japura-black uppercase border-r border-gray-400 bg-gray-200 min-w-[120px]">Código</th>
@@ -1342,7 +1357,7 @@ export default function JapImport() {
               <tbody>
                 {allProdutos.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-4 py-8 text-center text-xs text-japura-grey">
+                    <td colSpan={7} className="px-4 py-6 text-center text-xs text-japura-grey">
                       {isLoading ? 'Carregando produtos...' : 'Nenhum produto encontrado'}
                     </td>
                   </tr>
@@ -1350,7 +1365,7 @@ export default function JapImport() {
                   allProdutos.map((produto, index) => (
                     <tr
                       key={produto.id}
-                      className={`border-b border-gray-300 hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
+                      className={`border-b border-gray-200 hover:bg-japura-bg ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}
                     >
                       <td className="px-2 py-1 text-xs font-semibold text-japura-black border-r border-gray-300">{produto.pimpNumero || 'N/A'}</td>
                       <td className="px-2 py-1 text-xs text-japura-dark border-r border-gray-300 font-mono">{produto.codigoProduto || '-'}</td>
@@ -1387,10 +1402,10 @@ export default function JapImport() {
 
       {/* Grid Trânsito */}
       {viewMode === 'table' && mainTab === 'transito' && (
-        <div className="flex-1 bg-white border border-gray-300 rounded overflow-hidden flex flex-col">
+        <div className="flex-1 bg-japura-white border border-gray-400 rounded overflow-hidden flex flex-col">
           <div className="flex-1 overflow-auto">
             <table className="w-full border-collapse" style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px' }}>
-              <thead className="sticky top-0 z-20 bg-gray-200">
+              <thead className="sticky top-0 z-20 bg-gray-200 border-b border-gray-400">
                 <tr className="border-b border-gray-400">
                   <th className="px-2 py-1.5 text-left text-xs font-bold text-japura-black uppercase border-r border-gray-400 bg-gray-200 min-w-[100px]">PIMP</th>
                   <th className="px-2 py-1.5 text-left text-xs font-bold text-japura-black uppercase border-r border-gray-400 bg-gray-200 min-w-[150px]">Carrier</th>
@@ -1405,7 +1420,7 @@ export default function JapImport() {
               <tbody>
                 {allTransito.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="px-4 py-8 text-center text-xs text-japura-grey">
+                    <td colSpan={8} className="px-4 py-6 text-center text-xs text-japura-grey">
                       {isLoading ? 'Carregando trânsito...' : 'Nenhum registro de trânsito encontrado'}
                     </td>
                   </tr>
@@ -1413,7 +1428,7 @@ export default function JapImport() {
                   allTransito.map((transito, index) => (
                     <tr
                       key={transito.id}
-                      className={`border-b border-gray-300 hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
+                      className={`border-b border-gray-200 hover:bg-japura-bg ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}
                     >
                       <td className="px-2 py-1 text-xs font-semibold text-japura-black border-r border-gray-300">{transito.pimpNumero || 'N/A'}</td>
                       <td className="px-2 py-1 text-xs text-japura-dark border-r border-gray-300">{transito.carrier || '-'}</td>
@@ -1437,10 +1452,10 @@ export default function JapImport() {
 
       {/* Grid Recebidos */}
       {viewMode === 'table' && mainTab === 'recebidos' && (
-        <div className="flex-1 bg-white border border-gray-300 rounded overflow-hidden flex flex-col">
+        <div className="flex-1 bg-japura-white border border-gray-400 rounded overflow-hidden flex flex-col">
           <div className="flex-1 overflow-auto">
             <table className="w-full border-collapse" style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px' }}>
-              <thead className="sticky top-0 z-20 bg-gray-200">
+              <thead className="sticky top-0 z-20 bg-gray-200 border-b border-gray-400">
                 <tr className="border-b border-gray-400">
                   <th className="px-2 py-1.5 text-left text-xs font-bold text-japura-black uppercase border-r border-gray-400 bg-gray-200 min-w-[100px]">PIMP</th>
                   <th className="px-2 py-1.5 text-left text-xs font-bold text-japura-black uppercase border-r border-gray-400 bg-gray-200 min-w-[150px]">Exporter</th>
@@ -1464,7 +1479,7 @@ export default function JapImport() {
                   allRecebidos.map((recebido, index) => (
                     <tr
                       key={recebido.id}
-                      className={`border-b border-gray-300 hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
+                      className={`border-b border-gray-200 hover:bg-japura-bg ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}
                     >
                       <td className="px-2 py-1 text-xs font-semibold text-japura-black border-r border-gray-300">{recebido.pimp}</td>
                       <td className="px-2 py-1 text-xs text-japura-dark border-r border-gray-300">{recebido.exporter || '-'}</td>
@@ -1507,27 +1522,27 @@ export default function JapImport() {
 
       {/* Visualização Dashboard */}
       {viewMode === 'dashboard' && (
-        <div className="flex-1 bg-white border border-gray-300 rounded p-4 overflow-auto">
-          <h3 className="text-lg font-black text-japura-black mb-4">Dashboard de PIMPs</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <div className="bg-japura-bg p-3 rounded border border-gray-200">
+        <div className="flex-1 bg-japura-white border border-gray-400 rounded p-2 overflow-auto">
+          <h3 className="text-sm font-semibold text-japura-black mb-2">Dashboard de PIMPs</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
+            <div className="bg-japura-bg p-2 rounded border border-gray-400">
               <p className="text-xs font-semibold text-japura-grey mb-1">Total</p>
-              <p className="text-xl font-black text-japura-black">{filteredPimps.length}</p>
+              <p className="text-base font-semibold text-japura-black">{filteredPimps.length}</p>
             </div>
-            <div className="bg-japura-bg p-3 rounded border border-gray-200">
+            <div className="bg-japura-bg p-2 rounded border border-gray-400">
               <p className="text-xs font-semibold text-japura-grey mb-1">USD Total</p>
-              <p className="text-xl font-black text-japura-black">
+              <p className="text-base font-semibold text-japura-black">
                 ${filteredPimps.reduce((sum, p) => sum + (p.valorUsd || 0), 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </p>
             </div>
-            <div className="bg-japura-bg p-3 rounded border border-gray-200">
+            <div className="bg-japura-bg p-2 rounded border border-gray-400">
               <p className="text-xs font-semibold text-japura-grey mb-1">BRL Total</p>
-              <p className="text-xl font-black text-japura-black">
+              <p className="text-base font-semibold text-japura-black">
                 R$ {filteredPimps.reduce((sum, p) => sum + (p.valorBrl || 0), 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </p>
             </div>
           </div>
-          <div className="h-64 flex items-center justify-center bg-japura-bg rounded border-2 border-dashed border-gray-300">
+          <div className="h-32 flex items-center justify-center bg-japura-bg rounded border border-dashed border-gray-400">
             <div className="text-center">
               <BarChart3 size={48} className="mx-auto text-japura-grey mb-2" />
               <p className="text-japura-grey text-sm">Gráficos serão implementados</p>
@@ -1551,10 +1566,10 @@ export default function JapImport() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded shadow-2xl border-2 border-japura-black w-full max-w-2xl"
+              className="bg-japura-white rounded border border-japura-black w-full max-w-2xl"
             >
               <div className="bg-japura-black p-3 flex items-center justify-between">
-                <h2 className="text-lg font-black text-white">Exportar Excel</h2>
+                <h2 className="text-sm font-semibold text-white">Exportar Excel</h2>
                 <button
                   onClick={() => setShowExportModal(false)}
                   className="p-1 hover:bg-gray-800 rounded"
@@ -1570,7 +1585,7 @@ export default function JapImport() {
                       type="date"
                       value={exportParams.periodoInicio}
                       onChange={(e) => setExportParams({ ...exportParams, periodoInicio: e.target.value })}
-                      className="w-full px-2 py-1.5 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-japura-dark"
+                      className="w-full px-2 py-1.5 border border-gray-400 rounded text-xs focus:outline-none focus:ring-1 focus:ring-japura-dark"
                     />
                   </div>
                   <div>
@@ -1579,7 +1594,7 @@ export default function JapImport() {
                       type="date"
                       value={exportParams.periodoFim}
                       onChange={(e) => setExportParams({ ...exportParams, periodoFim: e.target.value })}
-                      className="w-full px-2 py-1.5 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-japura-dark"
+                      className="w-full px-2 py-1.5 border border-gray-400 rounded text-xs focus:outline-none focus:ring-1 focus:ring-japura-dark"
                     />
                   </div>
                 </div>
@@ -1588,7 +1603,7 @@ export default function JapImport() {
                   <select
                     value={exportParams.status}
                     onChange={(e) => setExportParams({ ...exportParams, status: e.target.value })}
-                    className="w-full px-2 py-1.5 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-japura-dark"
+                    className="w-full px-2 py-1.5 border border-gray-400 rounded text-xs focus:outline-none focus:ring-1 focus:ring-japura-dark"
                   >
                     <option value="todos">Todos</option>
                     {uniqueValues('status').map((val) => (
@@ -1601,7 +1616,7 @@ export default function JapImport() {
                   <select
                     value={exportParams.fornecedor}
                     onChange={(e) => setExportParams({ ...exportParams, fornecedor: e.target.value })}
-                    className="w-full px-2 py-1.5 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-japura-dark"
+                    className="w-full px-2 py-1.5 border border-gray-400 rounded text-xs focus:outline-none focus:ring-1 focus:ring-japura-dark"
                   >
                     <option value="todos">Todos</option>
                     {uniqueValues('fornecedor').map((val) => (
@@ -1623,13 +1638,13 @@ export default function JapImport() {
                 <div className="pt-3 border-t border-gray-200 flex justify-end gap-2">
                   <button
                     onClick={() => setShowExportModal(false)}
-                    className="px-3 py-1.5 border border-gray-300 rounded hover:bg-gray-50 text-xs"
+                    className="px-3 py-1.5 border border-gray-400 rounded hover:bg-japura-bg text-xs"
                   >
                     Cancelar
                   </button>
                   <button
                     onClick={handleExport}
-                    className="px-3 py-1.5 bg-japura-dark text-white rounded hover:bg-japura-black text-xs font-semibold"
+                    className="px-2 py-1 bg-japura-dark text-white rounded hover:bg-japura-black text-xs font-medium"
                   >
                     Exportar
                   </button>
@@ -1655,11 +1670,11 @@ export default function JapImport() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded shadow-2xl border-2 border-japura-black w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col"
+              className="bg-japura-white rounded border border-japura-black w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col"
             >
               <div className="bg-japura-black p-3 flex items-center justify-between">
                 <div>
-                  <h2 className="text-xl font-black text-white">{selectedPimp.numero}</h2>
+                  <h2 className="text-base font-semibold text-white">{selectedPimp.numero}</h2>
                   <p className="text-xs text-gray-400 mt-0.5">{selectedPimp.fornecedor}</p>
                 </div>
                 <button
@@ -1673,7 +1688,7 @@ export default function JapImport() {
               <div className="flex-1 overflow-y-auto p-4">
                 {selectedPimp.produtos && selectedPimp.produtos.length > 0 && (
                   <div>
-                    <h3 className="text-base font-black text-japura-black mb-3">Produtos ({selectedPimp.produtos.length} itens)</h3>
+                    <h3 className="text-sm font-semibold text-japura-black mb-2">Produtos ({selectedPimp.produtos.length} itens)</h3>
                     <div className="overflow-x-auto">
                       <table className="w-full border-collapse border border-gray-400 text-xs">
                         <thead>
@@ -1718,16 +1733,16 @@ export default function JapImport() {
                 )}
               </div>
 
-              <div className="p-3 border-t border-gray-300 bg-gray-50 flex justify-end gap-2">
+              <div className="p-2 border-t border-gray-400 bg-japura-bg flex justify-end gap-2">
                 <button
                   onClick={() => setSelectedPimp(null)}
-                  className="px-3 py-1.5 border border-gray-300 rounded hover:bg-gray-100 text-xs"
+                  className="px-2 py-1 border border-gray-400 rounded hover:bg-japura-bg text-xs"
                 >
                   Fechar
                 </button>
                 <button
                   onClick={() => alert('Exportando...')}
-                  className="px-3 py-1.5 bg-japura-dark text-white rounded hover:bg-japura-black text-xs font-semibold"
+                  className="px-2 py-1 bg-japura-dark text-white rounded hover:bg-japura-black text-xs font-medium"
                 >
                   Exportar
                 </button>
@@ -1738,7 +1753,6 @@ export default function JapImport() {
       </AnimatePresence>
 
       {/* Assistente de IA */}
-      <AIAssistant />
     </div>
   );
 }

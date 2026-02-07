@@ -157,10 +157,10 @@ export default function AIAssistant() {
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 w-14 h-14 bg-japura-black hover:bg-japura-dark text-white rounded-full shadow-lg flex items-center justify-center z-50 transition-colors"
+          className="fixed bottom-4 right-4 w-12 h-12 bg-japura-black hover:bg-japura-dark text-white rounded border border-japura-dark flex items-center justify-center z-50 transition-colors"
           title="Assistente de IA"
         >
-          <Bot size={24} />
+          <Bot size={20} />
         </motion.button>
       )}
 
@@ -171,43 +171,43 @@ export default function AIAssistant() {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-6 right-6 w-96 h-[600px] bg-japura-white rounded-japura shadow-2xl border-2 border-japura-black flex flex-col z-50"
+            className="fixed bottom-4 right-4 w-80 h-[480px] bg-japura-white rounded border border-gray-400 flex flex-col z-50"
           >
             {/* Header */}
-            <div className="bg-japura-black p-4 rounded-t-lg flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-japura-white rounded-lg">
-                  <Bot size={20} className="text-japura-black" />
+            <div className="bg-japura-black p-2 rounded-t flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 bg-japura-white rounded">
+                  <Bot size={16} className="text-japura-black" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-black text-white">Assistente IA</h3>
-                  <p className="text-xs text-gray-400">JapBase Intelligence</p>
+                  <h3 className="text-sm font-semibold text-white">Assistente IA</h3>
+                  <p className="text-[10px] text-gray-400">JapBase Intelligence</p>
                 </div>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-1.5 hover:bg-gray-800 rounded-lg transition-colors"
+                className="p-1 hover:bg-japura-dark rounded transition-colors"
               >
-                <X size={18} className="text-white" />
+                <X size={14} className="text-white" />
               </button>
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className="flex-1 overflow-y-auto p-2 space-y-2">
               {messages.map((message) => (
                 <div
                   key={message.id}
                   className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-[80%] rounded-lg p-3 ${
+                    className={`max-w-[85%] rounded p-2 ${
                       message.type === 'user'
                         ? 'bg-japura-dark text-white'
-                        : 'bg-gray-100 text-japura-black'
+                        : 'bg-japura-bg text-japura-black border border-gray-300'
                     }`}
                   >
-                    <p className="text-sm">{message.content}</p>
-                    <p className="text-xs opacity-70 mt-1">
+                    <p className="text-xs">{message.content}</p>
+                    <p className="text-[10px] opacity-70 mt-0.5">
                       {message.timestamp.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                     </p>
                   </div>
@@ -215,33 +215,33 @@ export default function AIAssistant() {
               ))}
               {isLoading && (
                 <div className="flex justify-start">
-                  <div className="bg-gray-100 rounded-lg p-3">
-                    <Loader2 size={16} className="animate-spin text-japura-dark" />
+                  <div className="bg-japura-bg rounded p-2 border border-gray-300">
+                    <Loader2 size={14} className="animate-spin text-japura-dark" />
                   </div>
                 </div>
               )}
             </div>
 
             {/* Input */}
-            <div className="p-4 border-t border-gray-200">
-              <div className="flex gap-2">
+            <div className="p-2 border-t border-gray-400">
+              <div className="flex gap-1">
                 <input
                   type="text"
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && handleSend()}
                   placeholder="Pergunte sobre PIMPs, vendas, distribuição..."
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-japura-dark text-sm"
+                  className="flex-1 px-2 py-1.5 border border-gray-400 rounded text-sm focus:outline-none focus:ring-1 focus:ring-japura-dark"
                 />
                 <button
                   onClick={handleSend}
                   disabled={!inputValue.trim() || isLoading}
-                  className="p-2 bg-japura-dark hover:bg-japura-black text-white rounded-lg disabled:opacity-50 transition-colors"
+                  className="p-1.5 bg-japura-dark hover:bg-japura-black text-white rounded disabled:opacity-50 transition-colors"
                 >
-                  <Send size={18} />
+                  <Send size={14} />
                 </button>
               </div>
-              <p className="text-xs text-japura-grey mt-2 italic">
+              <p className="text-[10px] text-japura-grey mt-1 italic">
                 TODO: Integrar com API de IA e backend do JapBase
               </p>
             </div>

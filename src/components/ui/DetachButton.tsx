@@ -4,12 +4,14 @@ import { ExternalLink } from 'lucide-react';
 
 interface DetachButtonProps {
   currentView: string;
+  /** Tab ativa quando currentView é pricing (para preservar na URL) */
+  pricingTab?: string;
 }
 
-export default function DetachButton({ currentView }: DetachButtonProps) {
+export default function DetachButton({ currentView, pricingTab }: DetachButtonProps) {
   const handleDetach = () => {
-    // Cria uma URL com o parâmetro da view atual e detach=true para ocultar sidebar
-    const url = `${window.location.origin}?view=${currentView}&detach=true`;
+    let url = `${window.location.origin}?view=${currentView}&detach=true`;
+    if (currentView === 'pricing' && pricingTab) url += `&tab=${pricingTab}`;
     
     const width = window.screen.width * 0.85;
     const height = window.screen.height * 0.85;
@@ -30,10 +32,12 @@ export default function DetachButton({ currentView }: DetachButtonProps) {
   return (
     <button
       onClick={handleDetach}
-      className="flex items-center gap-2 px-4 py-2 bg-japura-dark hover:bg-japura-black text-white rounded-lg transition-colors text-sm font-semibold shadow-sm"
+      className="flex items-center gap-2 px-3 py-1.5 min-h-[32px] border border-gray-400 rounded hover:bg-japura-bg text-sm font-medium text-japura-dark transition-colors"
       title="Desacoplar tela para outro monitor"
     >
-      <ExternalLink size={16} />
+      <span className="flex items-center justify-center w-[18px] h-[18px] shrink-0">
+        <ExternalLink size={16} strokeWidth={2} />
+      </span>
       <span>Desacoplar</span>
     </button>
   );
